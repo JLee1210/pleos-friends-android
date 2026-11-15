@@ -13,7 +13,7 @@
 ```sh
 cd android
 bash ./gradlew :app:assembleDemoRelease
-adb install -r ../apk/JLee1210_PleosFriends_release.apk
+adb install -r ../apk/RoDdo_PleosFriends_release.apk
 adb shell am start -n com.pleosfriends.demo/com.pleosfriends.MainActivity --es scenario busan
 ```
 
@@ -38,4 +38,4 @@ adb shell am start -n com.pleosfriends.demo/com.pleosfriends.MainActivity --es s
 
 ## APK 파일 위치 또는 GitHub Release 링크
 
-[`apk/JLee1210_PleosFriends_release.apk`](apk/JLee1210_PleosFriends_release.apk)
+[`apk/RoDdo_PleosFriends_release.apk`](apk/RoDdo_PleosFriends_release.apk)
