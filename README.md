@@ -2,9 +2,7 @@
 
 ## 앱 이름 및 한 줄 소개
 
-**Pleos Friends** — 따로 타도, 함께 가는 여행. 각자 다른 차로 같은 목적지를 향하는 그룹 여행 앱입니다. Kotlin / Jetpack Compose, Hyundai Pleos Connect용.
-
-부산 시연: 예빈 · 도현 · 서윤 3대, 목적지 **부산 호텔**, 그룹 **대학 동기 부산 원정대**, **2박 3일**. 경유는 **내 차만 / 모두 경로에 반영**을 고르는 즉시 경로에 들어갑니다. 4/4 투표는 쓰지 않습니다.
+**Pleos Friends** —3C로 완성하는 함께하는 여행 — Connectivity, Convenience, Contents.
 
 ## 실행 방법
 
