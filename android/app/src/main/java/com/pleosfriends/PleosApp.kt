@@ -126,7 +126,8 @@ internal data class InputRequest(val title: String, val value: String, val sampl
                     it.copy(viewerId = id, panel = if (it.started) Panel.NOTIFICATIONS else it.panel)
                 }
             }
-            Box(Modifier.weight(1f).fillMaxWidth().padding(if (BuildConfig.DEMO_MODE) 16.dp else 28.dp)
+            Box(Modifier.weight(1f).fillMaxWidth().padding(start = if (BuildConfig.DEMO_MODE) 16.dp else 28.dp,
+                top = if (BuildConfig.DEMO_MODE) 12.dp else 28.dp, end = if (BuildConfig.DEMO_MODE) 16.dp else 28.dp, bottom = 8.dp)
                 .clip(RoundedCornerShape(36.dp)).background(if (reviewing) TravelReviewCanvas else Paper)) {
                 if (unsafe && (services.restricted || !services.policyKnown)) {
                     Column(Modifier.align(Alignment.Center).padding(64.dp), horizontalAlignment = Alignment.CenterHorizontally,
@@ -151,10 +152,6 @@ internal data class InputRequest(val title: String, val value: String, val sampl
                     Screen.PICKS -> StandalonePicks(store, { back() })
                     Screen.HISTORY -> HistoryScreen(state, { back() }, { store.go(Screen.HUB) })
                 }
-                if (state.screen == Screen.HOME && BuildConfig.DEMO_MODE) {
-                    Label("PLEOS CONNECT  ·  FRIENDS DEMO", 15, color = Muted,
-                        modifier = Modifier.align(Alignment.BottomEnd).padding(end = 25.dp, bottom = 12.dp))
-                }
                 input?.let { request -> InputOverlay(request, services, state, { input = null; services.stopListening() }) { value -> request.save(value); input = null } }
                 editDay?.let { day -> ItineraryOverlay(day, state, services, { services.stopListening(); editDay = null }) { stops ->
                     store.update { current -> current.copy(days = current.days.mapIndexed { index, plan -> if (index == day) DayPlan(stops) else plan }) }; editDay = null
@@ -167,6 +164,7 @@ internal data class InputRequest(val title: String, val value: String, val sampl
                     }
                 }
             }
+            ConnectLightDock()
             }
         }
     }
@@ -203,7 +201,7 @@ internal data class InputRequest(val title: String, val value: String, val sampl
             Spacer(Modifier.width(23.dp)); Label("따로 타도, 함께 가는 여행", 25, color = Muted)
         }
         HomeTile("여행 시작하기", if (resume) "진행 중인 우리의 여행으로 돌아가요" else "우리의 다음 이야기는 어디로 갈까요?", R.drawable.home_journey,
-            Icons.Rounded.NorthEast, Modifier.fillMaxWidth().weight(1.1f).testTag("home-trip"), journey)
+            Icons.Rounded.NorthEast, Modifier.fillMaxWidth().weight(1.1f).testTag("home-trip"), journey, selected = true)
         Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
             HomeTile("Pleos Picks 둘러보기", "함께 가고 싶은 곳을 발견해요", R.drawable.home_picks,
                 Icons.Rounded.AutoAwesome, Modifier.weight(1f).fillMaxHeight().testTag("home-picks"), picks)
@@ -213,8 +211,10 @@ internal data class InputRequest(val title: String, val value: String, val sampl
         Spacer(Modifier.height(12.dp))
     }
 }
-@Composable private fun HomeTile(title: String, subtitle: String, image: Int, icon: ImageVector, modifier: Modifier, click: () -> Unit) {
-    Box(modifier.clip(RoundedCornerShape(34.dp)).background(Color(0xFFE8EAE8)).clickable(onClick = click)) {
+@Composable private fun HomeTile(title: String, subtitle: String, image: Int, icon: ImageVector, modifier: Modifier, click: () -> Unit,
+    selected: Boolean = false) {
+    Box(modifier.border(4.dp, if (selected) Purple else Color.Transparent, RoundedCornerShape(36.dp))
+        .padding(4.dp).clip(RoundedCornerShape(32.dp)).background(Color(0xFFE8EAE8)).clickable(onClick = click)) {
         Image(painterResource(image), null, Modifier.fillMaxSize().alpha(.32f), contentScale = ContentScale.Crop)
         Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.White.copy(.05f), Color.White.copy(.8f)))))
         Row(Modifier.align(Alignment.BottomStart).fillMaxWidth().padding(38.dp), verticalAlignment = Alignment.Bottom) {
@@ -383,6 +383,12 @@ internal data class InputRequest(val title: String, val value: String, val sampl
         Spacer(Modifier.weight(1f))
         Label("Connect-S-17  ·  1:2 DV", 15, color = Muted, maxLines = 1)
     }
+}
+
+@Composable private fun ConnectLightDock() {
+    Image(painterResource(R.drawable.connect_light_dock), "Connect light dock",
+        Modifier.fillMaxWidth().height(76.dp).background(Color(0xFFF7F8FA)).testTag("connect-dock"),
+        contentScale = ContentScale.FillWidth)
 }
 @Composable internal fun textStyle() = androidx.compose.ui.text.TextStyle(fontFamily = Asta, fontWeight = FontWeight.SemiBold, fontSize = 29.sp, color = Ink)
 

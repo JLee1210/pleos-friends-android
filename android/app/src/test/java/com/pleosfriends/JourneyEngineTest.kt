@@ -18,7 +18,7 @@ class JourneyEngineTest {
     private fun busan() = StoryFixture("busan","대학 동기 부산 원정대",
         Place("부산 호텔","부산광역시 해운대구 해운대해변로 296",35.1595,129.1628),2,540,busanMembers(),
         listOf("01000000001","01000000002"),Place("점심","금강휴게소",36.2816,127.6738),
-        Place("죽전휴게소","용인",37.3254,127.1078),Place("웨이브온커피","기장",35.3294,129.2834),
+        Place("죽전휴게소","용인",37.3254,127.1078),Place("해운대 오션카페","해운대",35.1588,129.1756),
         mapOf("rest" to "화장실","dohyunReply" to "좋아! 우리도 잠깐 쉬고 싶었어. 거기서 만나자.",
             "cafe" to "큰 카페","seoyunReply" to "좋아! 부산 도착 기념으로 사진도 찍자.",
             "gameReason" to "오늘 점심 쏘기","gameWinner" to "a"))
@@ -35,7 +35,7 @@ class JourneyEngineTest {
         assertTrue(planned.days.none { day -> day.stops.any { it.name.contains("카페") } })
         assertTrue(TripRules.start(planned).started)
         val withCafe = JourneyEngine.commit(planned,RouteChange("cafe",busan().cafe,1,"me",RouteScope.GROUP),"커피")
-        assertEquals(listOf("점심","웨이브온커피"),JourneyEngine.visibleStops(withCafe,"me").map { it.name })
+        assertEquals(listOf("점심","해운대 오션카페"),JourneyEngine.visibleStops(withCafe,"me").map { it.name })
     }
     @Test fun `personal stop affects only the owner and preserves the original plan`() {
         val initial = state(); val changed = JourneyEngine.commit(initial,RouteChange("one",DemoPlaces.rest,0,"me",RouteScope.PERSONAL),"I'll stop briefly")

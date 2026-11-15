@@ -131,6 +131,8 @@ class BusanStoryTest {
         try {
             waitTag("home-trip");pause("01-home")
             compose.onNodeWithTag("viewer-me").assertExists()
+            compose.onNodeWithTag("connect-dock").assertExists()
+            compose.onAllNodesWithText("장면",substring=true).assertCountEquals(0)
             tap("home-trip");waitTag("destination")
             input("destination",fixture.destination.name)
             assertEquals("부산 호텔",snapshot().destination)

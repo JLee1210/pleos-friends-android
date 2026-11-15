@@ -56,39 +56,32 @@ private data class MapData(val bounds: List<Double>, val roads: List<Road>, val 
                 GroupMap(state,Modifier.fillMaxSize(),etaCardSize)
                 Column(Modifier.align(Alignment.TopStart).fillMaxWidth().padding(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
                     Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(10.dp)) {
-                        Surface(onClick=home,shape=CircleShape,color=Color.White,modifier=Modifier.size(58.dp).testTag("hub-home")) {
-                            Box(contentAlignment=Alignment.Center) { Icon(Icons.Rounded.Home,"홈",Modifier.size(28.dp),tint=Purple) }
+                        Surface(onClick=home,shape=CircleShape,color=Color.White,modifier=Modifier.size(52.dp).testTag("hub-home")) {
+                            Box(contentAlignment=Alignment.Center) { Icon(Icons.Rounded.Home,"홈",Modifier.size(24.dp),tint=Purple) }
                         }
                         Surface(color=Color.White.copy(.97f),shape=RoundedCornerShape(21.dp),modifier=Modifier.weight(1f)) {
-                            Column(Modifier.padding(horizontal=19.dp,vertical=13.dp)) {
-                                Label(state.groupName,24,FontWeight.Bold,maxLines=1)
-                                Label(if(state.journeyEnded) "따로 출발했지만, 함께 도착!" else "${state.activeDay+1}일차 · ${TripRules.nextPlace(state).name} 가는 중",18,color=Muted,maxLines=1)
-                            }
+                            val heading = if (state.journeyEnded) "도착" else "${TripRules.nextPlace(state).name} 가는 중"
+                            Label("${state.groupName} | ${state.activeDay+1}일차 | $heading",20,FontWeight.Bold,
+                                modifier=Modifier.padding(horizontal=16.dp,vertical=14.dp),maxLines=1)
                         }
                         HeaderIcon(Icons.Rounded.CalendarMonth,"여행 일정","calendar") { open(Panel.ITINERARY) }
-                        Spacer(Modifier.width(10.dp))
-                        HeaderIcon(Icons.Rounded.NotificationsNone,"알림 ${JourneyEngine.inbox(state).size.takeIf { it>0 }?:""}","notifications") { open(Panel.NOTIFICATIONS) }
+                        HeaderIcon(Icons.Rounded.NotificationsNone,"알림${JourneyEngine.inbox(state).size.takeIf { it>0 }?.let { " $it" } ?: ""}","notifications") { open(Panel.NOTIFICATIONS) }
                     }
                 }
-                Surface(color=Color.White.copy(.98f),shape=RoundedCornerShape(22.dp),modifier=Modifier.align(Alignment.BottomStart).padding(start=22.dp,bottom=100.dp)
+                Surface(color=Color.White.copy(.98f),shape=RoundedCornerShape(22.dp),modifier=Modifier.align(Alignment.BottomStart).padding(start=22.dp,bottom=22.dp)
                     .shadow(3.dp,RoundedCornerShape(22.dp)).onSizeChanged { etaCardSize=it }) {
                     Column(Modifier.padding(20.dp)) {
-                        Label("${JourneyEngine.viewer(state).name} · 최종 도착까지",17,color=Muted)
-                        Label(if(state.journeyEnded) "도착 완료" else "약 ${JourneyEngine.duration(JourneyEngine.etaMinutes(state))}",28,FontWeight.Bold)
-                        Label(state.destination,20,color=Purple)
-                        Label("예상 도착 ${JourneyEngine.arrivalClock(state)}",17,color=Muted)
+                        Label(if(state.journeyEnded) "모두 도착했어요" else "${JourneyEngine.viewer(state).name} · 최종 도착까지",17,color=Muted,maxLines=1)
+                        Label(if(state.journeyEnded) "${state.members.size}/${state.members.size}" else "약 ${JourneyEngine.duration(JourneyEngine.etaMinutes(state))}",28,FontWeight.Bold)
+                        Label(state.destination,20,color=Purple,maxLines=1)
+                        Label(if(state.journeyEnded) "© OpenStreetMap" else "예상 도착 ${JourneyEngine.arrivalClock(state)}",17,color=Muted,maxLines=1)
                     }
                 }
-                if(state.panel==Panel.NONE||voiceOverlay) Column(Modifier.align(Alignment.CenterEnd).padding(end=20.dp)
-                    .clip(RoundedCornerShape(28.dp)).background(Color.White.copy(.96f)).padding(10.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+                if(state.panel==Panel.NONE||voiceOverlay) Column(Modifier.align(Alignment.CenterEnd).padding(end=20.dp),
+                    verticalArrangement=Arrangement.spacedBy(10.dp),horizontalAlignment=Alignment.CenterHorizontally) {
                     Rail(Icons.Rounded.AddLocationAlt,"경유 추가",services.policyKnown&&!services.restricted,"waypoint-add") { picked=null;open(Panel.WAYPOINT) }
                     Rail(Icons.Rounded.Casino,"게임 제안",services.policyKnown&&!services.restricted,"game-open") { open(Panel.GAME) }
                     Rail(Icons.Rounded.AutoAwesome,"플픽",services.policyKnown&&!services.restricted,"picks-open") { open(Panel.PICKS) }
-                }
-                Column(Modifier.align(Alignment.BottomStart).padding(20.dp).clip(RoundedCornerShape(14.dp)).background(Color.White.copy(.95f)).padding(horizontal=14.dp,vertical=10.dp)) {
-                    if(state.journeyEnded) Label("✓ 모두 도착했어요",21,FontWeight.Bold,Purple)
-                    Label(if(BuildConfig.DEMO_MODE) "${state.members.size}대 연결 · 위치·경로·ETA는 시연 데이터" else "친구 위치는 시연 데이터 · ${services.status}",14,color=Muted)
-                    Label("© OpenStreetMap · openstreetmap.org/copyright",13,color=Muted)
                 }
             }
             // Keep the editor composed while a voice dialog expands the map underneath it.
@@ -120,10 +113,10 @@ private data class MapData(val bounds: List<Double>, val roads: List<Road>, val 
     }
 }
 @Composable private fun Rail(icon: androidx.compose.ui.graphics.vector.ImageVector,label:String,enabled:Boolean=true,tag:String,click:()->Unit) {
-    Surface(onClick=click,enabled=enabled,shape=RoundedCornerShape(20.dp),color=Paper,modifier=Modifier.width(108.dp).testTag(tag)) {
-        Column(Modifier.padding(vertical=12.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(6.dp)) {
-            Icon(icon,label,Modifier.size(26.dp),tint=if(enabled) Purple else Muted)
-            Text(label,color=if(enabled) Ink else Muted,fontFamily=TravelReviewFont,fontWeight=FontWeight.Bold,fontSize=16.sp,lineHeight=18.sp,
+    Surface(onClick=click,enabled=enabled,shape=CircleShape,color=Color.White,shadowElevation=2.dp,modifier=Modifier.size(88.dp).testTag(tag)) {
+        Column(horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.Center) {
+            Icon(icon,label,Modifier.size(22.dp),tint=if(enabled) Purple else Muted)
+            Text(label,color=if(enabled) Ink else Muted,fontFamily=TravelReviewFont,fontWeight=FontWeight.Bold,fontSize=13.sp,lineHeight=15.sp,
                 textAlign=androidx.compose.ui.text.style.TextAlign.Center,maxLines=1)
         }
     }

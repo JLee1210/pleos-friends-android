@@ -27,7 +27,7 @@ With a parked Pleos emulator running:
 python3 android/scripts/record_busan.py
 ```
 
-The script builds and installs the app and test APK, then drives the actual native UI. **일정 추가** is one address-search field plus **Gleo AI** — no second address box and no stacked extra CTAs. Day 1 is **점심** dragged between 출발 and **부산 호텔**; there is no 카페 미정. Café is added only later from 플픽. It then names the group **대학 동기 부산 원정대**, invites 도현 and 서윤, switches the demo viewer for voice alerts and replies, runs the parked ladder (도현 당첨), adds 웨이브온커피 from 플픽, and arrives at the hotel with all three cars. Files are written to **`recordings/`**:
+The script builds and installs the app and test APK, then drives the actual native UI. **일정 추가** is one address-search field plus **Gleo AI** — no second address box and no stacked extra CTAs. Day 1 is **점심** dragged between 출발 and **부산 호텔**; there is no 카페 미정. Café is added only later from 플픽. It then names the group **대학 동기 부산 원정대**, invites 도현 and 서윤, switches the demo viewer for voice alerts and replies, runs the parked ladder (도현 당첨), adds **해운대 오션카페** from 플픽, and arrives at the hotel with all three cars. Files are written to **`recordings/`**:
 
 * `PleosFriends-Busan-Demo.mp4` — 1920×1080 native emulator recording.
 * Selected numbered PNG screenshots of the scenes.
@@ -55,7 +55,7 @@ To load the three-car scenario for **manual** recording:
 adb shell am start -n com.pleosfriends.demo/com.pleosfriends.MainActivity --es scenario busan
 ```
 
-This resets the local demo journey. Enter the values in the JSON or use the automated recording command. A slim **DEMO 화면** strip (예빈 / 도현 / 서윤) sits outside the IVI card so viewer switches are obvious; accelerated arrival events stay test-only and are not product chrome. Driving View and the light dock are Pleos Connect-S-17 vehicle chrome around this 1:2 app pane.
+This resets the local demo journey. Enter the values in the JSON or use the automated recording command. A slim **DEMO 화면** strip (예빈 / 도현 / 서윤) sits outside the IVI card so viewer switches are obvious; there are no **장면** overlay chips. Accelerated arrival events stay test-only. A Connect-S-17 **light dock** runs under every screen. Driving View remains vehicle chrome around this 1:2 app pane.
 
 ## Implemented flows
 
@@ -65,11 +65,11 @@ This resets the local demo journey. Enter the values in the JSON or use the auto
 
 The map uses detailed offline grayscale road and area renderings for the Seoul metropolitan area and Busan, colored scenario routes, dark ETA/distance labels, a **ring destination**, and a light right-hand action rail with single-line labels (not cramped multi-line dark discs). Geographic source extracts and their regeneration script are included with attribution; no runtime map API key is needed. These are demonstration maps, not live Hyundai map or traffic data. Accent is **`#5A46FA`**, text is Gray/900 **`#131417`**.
 
-**Picks during a trip:** horizontal curation banners, current-location/destination tabs, 전체/카페/식당/여행·명소 filters, 네이버/카카오 source selection, rating/distance/recommendation sorting, photographs, bookmarks, proximity badges, address/hours/rating, and Hyundai-style visit/recommendation badges. **일정 추가** opens the same live itinerary editor with the selected place, without changing the entered destination or group.
+**Picks during a trip:** horizontal curation banners, current-location/destination tabs, 전체/카페/식당/여행·명소 filters, 네이버/카카오 source selection, rating/distance/recommendation sorting, photographs, bookmarks, proximity badges, address/hours/rating, and a **small navy Hyundai 128 / 👍 30** pill. The Busan café card is **해운대 오션카페**. **일정 추가** opens the same live itinerary editor with the selected place, without changing the entered destination or group.
 
 **Part 3:** home → destination-region Picks browser covering the app’s two-thirds screen area. Region follows the current destination. Vertical scrolling, horizontal banners, source/sort/category filters, bookmarks, detail views and **🐻 10 visits / 👍 8 recommendations** are present. Ratings are stable demo values so they do not change on every redraw.
 
-**Busan case:** six college friends in three vehicles — **예빈** (고양시 일산), **도현** (서울시 마포구), **서윤** (경기도 수원); group **대학 동기 부산 원정대**; dest **부산 호텔**; **2박 3일**. Five scenes: (1) setup lunch+hotel only, (2) 죽전휴게소 group waypoint + 예빈 voice + 도현/서윤 viewer alerts and 도현 voice reply, (3) parked 사다리 **오늘 점심 쏘기** with 도현 당첨, (4) 플픽 현재 위치 → 카페 → 웨이브온커피 → group route + 서윤 reply, (5) 여행 일정 shows 점심 · 휴게소 · 카페 · 호텔 and all three cars arrive. Games never change an itinerary.
+**Busan case:** six college friends in three vehicles — **예빈** (고양시 일산), **도현** (서울시 마포구), **서윤** (경기도 수원); group **대학 동기 부산 원정대**; dest **부산 호텔**; **2박 3일**. Five scenes: (1) setup lunch+hotel only, (2) 죽전휴게소 group waypoint + 예빈 voice + 도현/서윤 viewer alerts and 도현 voice reply, (3) parked 사다리 **오늘 점심 쏘기** with 도현 당첨, (4) 플픽 현재 위치 → 카페 → 해운대 오션카페 → group route + 서윤 reply, (5) 여행 일정 shows 점심 · 휴게소 · 카페 · 호텔 and all three cars arrive. Games never change an itinerary.
 
 ## Real versus simulated
 
