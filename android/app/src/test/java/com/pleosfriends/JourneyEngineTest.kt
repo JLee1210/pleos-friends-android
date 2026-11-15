@@ -37,6 +37,16 @@ class JourneyEngineTest {
         val withCafe = JourneyEngine.commit(planned,RouteChange("cafe",busan().cafe,1,"me",RouteScope.GROUP),"커피")
         assertEquals(listOf("점심","해운대 오션카페"),JourneyEngine.visibleStops(withCafe,"me").map { it.name })
     }
+    @Test fun `waypoint scope applies immediately without waiting for a voice notification`() {
+        val applied = JourneyEngine.commit(state(), RouteChange("one", DemoPlaces.rest, 0, "me", RouteScope.PERSONAL), notify = false)
+        assertEquals(listOf("휴게소", "점심"), JourneyEngine.visibleStops(applied, "me").map { it.name })
+        assertEquals(listOf("점심"), JourneyEngine.visibleStops(applied, "a").map { it.name })
+        assertTrue(applied.notes.isEmpty())
+        val notified = JourneyEngine.commit(applied, RouteChange("one", DemoPlaces.rest, 0, "me", RouteScope.PERSONAL), "I'll stop briefly", true)
+        assertEquals(applied.changes, notified.changes)
+        assertEquals(1, notified.notes.size)
+        assertEquals("I'll stop briefly", notified.notes.single().voice)
+    }
     @Test fun `personal stop affects only the owner and preserves the original plan`() {
         val initial = state(); val changed = JourneyEngine.commit(initial,RouteChange("one",DemoPlaces.rest,0,"me",RouteScope.PERSONAL),"I'll stop briefly")
         assertEquals(listOf("휴게소","점심"),JourneyEngine.visibleStops(changed,"me").map { it.name })

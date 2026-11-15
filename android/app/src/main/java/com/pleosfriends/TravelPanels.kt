@@ -70,13 +70,26 @@ import java.util.UUID
         dragPoint?.let { point -> insertion = zones.minByOrNull { (_, r) -> kotlin.math.abs(r.center.y - point.y) }?.key?.coerceIn(0, stops.size) }
         dragPoint = null
     }
-    fun commit(voice: String, notify: Boolean) {
-        val p = candidate ?: return; val position = insertion ?: return; val selected = scope ?: return
-        val change = RouteChange(id = changeId, place = p, index = position, ownerId = state.viewerId, scope = selected, day = state.activeDay)
-        store.update { JourneyEngine.commit(it, change, voice, notify) }
+    fun changeOf(selected: RouteScope): RouteChange? {
+        val p = candidate ?: return null; val position = insertion ?: return null
+        return RouteChange(id = changeId, place = p, index = position, ownerId = state.viewerId, scope = selected, day = state.activeDay)
+    }
+    fun applyScope(selected: RouteScope) {
+        if (scope != null) return
+        val change = changeOf(selected) ?: return
+        scope = selected
+        store.update { JourneyEngine.commit(it, change, notify = false).copy(panel = Panel.WAYPOINT) }
+        services.startNavigation(store.state)
+        services.announce(if (selected == RouteScope.GROUP) "모든 차량 경로에 반영했어요" else "내 차 경로에만 반영했어요")
+    }
+    fun finish(voice: String, notify: Boolean) {
+        val selected = scope ?: return
+        val change = changeOf(selected) ?: return
+        val p = change.place
+        store.update { JourneyEngine.commit(it, change, voice, notify).copy(panel = Panel.NONE) }
         services.startNavigation(store.state)
         services.announce(if (notify) "친구들에게 알림을 보냈어요" else "여행 일정 수정이 완료됐어요")
-        val count = if (selected == RouteScope.GROUP) "${state.members.size}대 전체 경로" else "내 차 경로"
+        val count = if (selected == RouteScope.GROUP) "${store.state.members.size}대 전체 경로" else "내 차 경로"
         complete("✓  Sent and updated\n${if (notify) "친구들에게 알림을 보냈어요" else "여행 일정을 수정했어요"}\n$count · ${p.name}\n예상 도착 ${JourneyEngine.arrivalClock(store.state)}")
     }
     Column(Modifier.fillMaxSize(),verticalArrangement=Arrangement.spacedBy(14.dp)) {
@@ -115,7 +128,7 @@ import java.util.UUID
                 val active=dragPoint?.let {point->zones.minByOrNull {(_,r)->kotlin.math.abs(r.center.y-point.y)}?.key==i}?:false
                 Box(Modifier.fillMaxWidth().height(if(dragPoint!=null) 38.dp else if(insertion==null) 16.dp else 3.dp).testTag("realtime-drop-$i")
                     .onGloballyPositioned {zones[i]=it.boundsInRoot()}.background(if(active) Purple.copy(.25f) else Color.Transparent,RoundedCornerShape(10.dp)))
-                if(insertion==i&&candidate!=null) Row(Modifier.fillMaxWidth().height(72.dp).clip(RoundedCornerShape(22.dp)).background(Purple).padding(horizontal=22.dp),verticalAlignment=Alignment.CenterVertically) {
+                if(insertion==i&&candidate!=null&&scope==null) Row(Modifier.fillMaxWidth().height(72.dp).clip(RoundedCornerShape(22.dp)).background(Purple).padding(horizontal=22.dp),verticalAlignment=Alignment.CenterVertically) {
                     Label("추가할 일정",18,FontWeight.Bold,Color.White.copy(.9f),maxLines=1)
                     Spacer(Modifier.width(12.dp))
                     Label(candidate!!.name,24,FontWeight.Bold,Color.White,Modifier.weight(1f),maxLines=1)
@@ -123,25 +136,26 @@ import java.util.UUID
                 if(i<stops.size) ScheduleRow("stop ${i+1}",stops[i].name,"+${JourneyEngine.legMinutes(state,stops,i)}분")
             }
             ScheduleRow("도착",state.destination,JourneyEngine.clock(state.departureMinute+state.members.first {it.id==state.viewerId}.baseMinutes+
-                state.changes.filter {it.ownerId==state.viewerId||it.scope==RouteScope.GROUP}.sumOf {it.addedMinutes}+if(insertion!=null) 12 else 0))
+                state.changes.filter {it.ownerId==state.viewerId||it.scope==RouteScope.GROUP}.sumOf {it.addedMinutes}+if(insertion!=null&&scope==null) 12 else 0))
         }
         if(insertion!=null) {
-            Label("일정 추가",23,FontWeight.Bold)
+            Label("일정 추가 · 선택하면 바로 경로에 반영돼요",23,FontWeight.Bold,maxLines=1)
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(12.dp)) {
-                ScheduleChoice("내 차만",scope==RouteScope.PERSONAL,Modifier.weight(1f).testTag("scope-personal")) {scope=RouteScope.PERSONAL}
-                ScheduleChoice("그룹 경유지로",scope==RouteScope.GROUP,Modifier.weight(1f).testTag("scope-group")) {scope=RouteScope.GROUP}
+                ScheduleChoice("내 차만",scope==RouteScope.PERSONAL,Modifier.weight(1f).testTag("scope-personal")) {applyScope(RouteScope.PERSONAL)}
+                ScheduleChoice("모두 경로에 반영",scope==RouteScope.GROUP,Modifier.weight(1f).testTag("scope-group")) {applyScope(RouteScope.GROUP)}
             }
             Label("친구들에게 알릴까요?",23,FontWeight.Bold,modifier=Modifier.padding(top=4.dp))
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(12.dp)) {
                 ScheduleChoice("응, 음성 메시지로",false,Modifier.weight(1f).testTag("notify-voice"),scope!=null) {
                     val sample=state.story?.messages?.get(if(candidate?.name==state.story?.cafe?.name) "cafe" else "rest")?:"sorry I have to go to the bathroom"
-                    request(InputRequest("Gleo AI · 친구들에게 전할 음성 메시지","",sample,true) {commit(it,true)})
+                    request(InputRequest("Gleo AI · 친구들에게 전할 음성 메시지","",sample,true) {finish(it,true)})
                 }
-                ScheduleChoice("아니",false,Modifier.weight(1f).testTag("notify-no"),scope!=null) {commit("",false)}
+                ScheduleChoice("아니",false,Modifier.weight(1f).testTag("notify-no"),scope!=null) {finish("",false)}
             }
         }
         ScheduleChoice("뒤로가기",false,Modifier.fillMaxWidth().testTag("waypoint-back")) {
-            if(insertion!=null) {insertion=null;scope=null} else back()
+            if(scope!=null) back()
+            else if(insertion!=null) {insertion=null;scope=null} else back()
         }
     }
 }
