@@ -27,9 +27,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.text
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,8 +80,8 @@ private data class MapData(val bounds: List<Double>, val roads: List<Road>, val 
                     }
                 }
                 if(state.panel==Panel.NONE||voiceOverlay) Column(Modifier.align(Alignment.CenterEnd).padding(end=20.dp)
-                    .clip(RoundedCornerShape(60.dp)).background(Color(0xFF797B82).copy(.88f)).padding(12.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
-                    Rail(Icons.Rounded.AddLocationAlt,"경유지 추가",services.policyKnown&&!services.restricted,"waypoint-add") { picked=null;open(Panel.WAYPOINT) }
+                    .clip(RoundedCornerShape(28.dp)).background(Color.White.copy(.96f)).padding(10.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+                    Rail(Icons.Rounded.AddLocationAlt,"경유 추가",services.policyKnown&&!services.restricted,"waypoint-add") { picked=null;open(Panel.WAYPOINT) }
                     Rail(Icons.Rounded.Casino,"게임 제안",services.policyKnown&&!services.restricted,"game-open") { open(Panel.GAME) }
                     Rail(Icons.Rounded.AutoAwesome,"플픽",services.policyKnown&&!services.restricted,"picks-open") { open(Panel.PICKS) }
                 }
@@ -103,7 +100,7 @@ private data class MapData(val bounds: List<Double>, val roads: List<Road>, val 
                         IconButton({open(state.panel)},Modifier.size(52.dp).testTag("close-panel")) { Icon(Icons.Rounded.Close,"패널 닫기") }
                     }
                     when(state.panel) {
-                        Panel.ITINERARY->TravelItinerary(state,Modifier.weight(1f)) { picked=null;open(Panel.WAYPOINT) }
+                        Panel.ITINERARY->TravelItinerary(state,Modifier.weight(1f))
                         Panel.NOTIFICATIONS->NotificationsPanel(store,services,request)
                         Panel.WAYPOINT->RealtimeSchedule(store,picked,services,request,complete,{revised=it}) { open(Panel.WAYPOINT) }
                         Panel.GAME->LadderPanel(store,services,request)
@@ -116,15 +113,19 @@ private data class MapData(val bounds: List<Double>, val roads: List<Road>, val 
     }
 }
 @Composable private fun HeaderIcon(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, tag: String, click: () -> Unit) {
-    Surface(onClick = click, shape = RoundedCornerShape(22.dp), color = Color.White, shadowElevation=2.dp, modifier = Modifier.testTag(tag)) {
-        Row(Modifier.heightIn(min = 72.dp).padding(horizontal = 14.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(icon, null, Modifier.size(24.dp)); Spacer(Modifier.width(8.dp)); Label(label, 21, FontWeight.Bold)
+    Surface(onClick = click, shape = RoundedCornerShape(18.dp), color = Color.White, shadowElevation=1.dp, modifier = Modifier.testTag(tag)) {
+        Row(Modifier.height(52.dp).padding(horizontal = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(icon, null, Modifier.size(22.dp), tint = Purple); Spacer(Modifier.width(8.dp)); Label(label, 18, FontWeight.Bold, maxLines = 1)
         }
     }
 }
 @Composable private fun Rail(icon: androidx.compose.ui.graphics.vector.ImageVector,label:String,enabled:Boolean=true,tag:String,click:()->Unit) {
-    Surface(onClick=click,enabled=enabled,shape=CircleShape,color=Ink,modifier=Modifier.size(112.dp).testTag(tag)) {
-        Box(contentAlignment=Alignment.Center) { Text(label.replace(" ","\n"),Modifier.width(84.dp).clearAndSetSemantics {text=AnnotatedString(label)},color=if(enabled) Color.White else Muted,fontFamily=TravelReviewFont,fontWeight=FontWeight.Bold,fontSize=23.sp,lineHeight=30.sp,textAlign=androidx.compose.ui.text.style.TextAlign.Center,maxLines=2) }
+    Surface(onClick=click,enabled=enabled,shape=RoundedCornerShape(20.dp),color=Paper,modifier=Modifier.width(108.dp).testTag(tag)) {
+        Column(Modifier.padding(vertical=12.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(6.dp)) {
+            Icon(icon,label,Modifier.size(26.dp),tint=if(enabled) Purple else Muted)
+            Text(label,color=if(enabled) Ink else Muted,fontFamily=TravelReviewFont,fontWeight=FontWeight.Bold,fontSize=16.sp,lineHeight=18.sp,
+                textAlign=androidx.compose.ui.text.style.TextAlign.Center,maxLines=1)
+        }
     }
 }
 

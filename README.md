@@ -27,7 +27,7 @@ With a parked Pleos emulator running:
 python3 android/scripts/record_busan.py
 ```
 
-The script builds and installs the app and test APK, then drives the actual native UI. During setup it enters stops, visibly drags them between departure and arrival, reorders them, saves the pair onto the horizontal timeline and reopens the editor to verify the saved order. It leaves the tentative café undecided, keeping the original lunch-and-hotel plan. It then fills the invitations, changes vehicle views for incoming messages, runs the ladder game, adds the café through Picks, visits the hotel, and demonstrates home Picks. Files are written to **`recordings/`**:
+The script builds and installs the app and test APK, then drives the actual native UI. **일정 추가** is one address-search field plus **Gleo AI** — no second address box and no stacked extra CTAs. Day 1 is **점심** dragged between 출발 and **부산 호텔**; there is no 카페 미정. Café is added only later from 플픽. It then names the group **대학 동기 부산 원정대**, invites 도현 and 서윤, switches the demo viewer for voice alerts and replies, runs the parked ladder (도현 당첨), adds 웨이브온커피 from 플픽, and arrives at the hotel with all three cars. Files are written to **`recordings/`**:
 
 * `PleosFriends-Busan-Demo.mp4` — 1920×1080 native emulator recording.
 * Selected numbered PNG screenshots of the scenes.
@@ -55,7 +55,7 @@ To load the three-car scenario for **manual** recording:
 adb shell am start -n com.pleosfriends.demo/com.pleosfriends.MainActivity --es scenario busan
 ```
 
-This resets the local demo journey. Enter the values in the JSON or use the automated recording command. Vehicle-view switches and accelerated arrival events belong to the separate test script and are absent from the product UI.
+This resets the local demo journey. Enter the values in the JSON or use the automated recording command. A slim **DEMO 화면** strip (예빈 / 도현 / 서윤) sits outside the IVI card so viewer switches are obvious; accelerated arrival events stay test-only and are not product chrome. Driving View and the light dock are Pleos Connect-S-17 vehicle chrome around this 1:2 app pane.
 
 ## Implemented flows
 
@@ -63,13 +63,13 @@ This resets the local demo journey. Enter the values in the JSON or use the auto
 
 **Part 2:** the map stays visible beside the right panel. **전체 여행 일정** shows departure, ordered stops and arrival with clocks and estimated leg durations. **경유지 추가 / 일정 추가** opens the shared live editor. Gleo sample input fills **가평제알휴게소**, which can be dragged before stop 1. The recorded flow closes **전체 여행 일정**, returns to the main map, and opens the right-hand **경유지 추가** control. Placing the new stop opens **수정된 일정**, with the new row highlighted in purple. **내 차만 / 그룹 경유지로** and **응, 음성 메시지로 / 아니** remain visible together. Scope selection does not apply a change; sending the voice message or choosing **아니** applies it. **내 차만** changes only that vehicle’s route and ETA; **그룹 경유지로** changes all member itineraries. Cancelling the voice dialog preserves the editor draft and selected scope. The voice composer expands over the full map, followed by a compact sent-confirmation card. Voice notifications, playback, replies and completion feedback are included. Repeated confirmation IDs cannot duplicate stops.
 
-The map uses detailed offline grayscale road and area renderings for the Seoul metropolitan area and Busan, colored scenario routes, dark ETA/distance labels and a circular action rail. Geographic source extracts and their regeneration script are included with attribution; no runtime map API key is needed. These are demonstration maps, not live Hyundai map or traffic data.
+The map uses detailed offline grayscale road and area renderings for the Seoul metropolitan area and Busan, colored scenario routes, dark ETA/distance labels, a **ring destination**, and a light right-hand action rail with single-line labels (not cramped multi-line dark discs). Geographic source extracts and their regeneration script are included with attribution; no runtime map API key is needed. These are demonstration maps, not live Hyundai map or traffic data. Accent is **`#5A46FA`**, text is Gray/900 **`#131417`**.
 
 **Picks during a trip:** horizontal curation banners, current-location/destination tabs, 전체/카페/식당/여행·명소 filters, 네이버/카카오 source selection, rating/distance/recommendation sorting, photographs, bookmarks, proximity badges, address/hours/rating, and Hyundai-style visit/recommendation badges. **일정 추가** opens the same live itinerary editor with the selected place, without changing the entered destination or group.
 
 **Part 3:** home → destination-region Picks browser covering the app’s two-thirds screen area. Region follows the current destination. Vertical scrolling, horizontal banners, source/sort/category filters, bookmarks, detail views and **🐻 10 visits / 👍 8 recommendations** are present. Ratings are stable demo values so they do not change on every redraw.
 
-**Busan case:** six college friends in three vehicles, 예빈 (일산), 도현 (마포), 서윤 (수원); two nights/three days; lunch and hotel initially planned. The script covers rest-area group coordination and replies, a parked ladder game with 도현 selected by the fixture, café discovery and group addition, and all three vehicles arriving at the hotel. Games never change an itinerary.
+**Busan case:** six college friends in three vehicles — **예빈** (고양시 일산), **도현** (서울시 마포구), **서윤** (경기도 수원); group **대학 동기 부산 원정대**; dest **부산 호텔**; **2박 3일**. Five scenes: (1) setup lunch+hotel only, (2) 죽전휴게소 group waypoint + 예빈 voice + 도현/서윤 viewer alerts and 도현 voice reply, (3) parked 사다리 **오늘 점심 쏘기** with 도현 당첨, (4) 플픽 현재 위치 → 카페 → 웨이브온커피 → group route + 서윤 reply, (5) 여행 일정 shows 점심 · 휴게소 · 카페 · 호텔 and all three cars arrive. Games never change an itinerary.
 
 ## Real versus simulated
 
