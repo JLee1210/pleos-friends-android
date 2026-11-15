@@ -1,0 +1,7 @@
+.DS_Store
+recordings/
+releases/
+outputs/pleos-android/
+*.apk
+*.log
+validation/
