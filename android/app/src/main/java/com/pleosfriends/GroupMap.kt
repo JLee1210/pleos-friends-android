@@ -85,7 +85,7 @@ private data class MapData(val bounds: List<Double>, val roads: List<Road>, val 
                 }
             }
             // Keep the editor composed while a voice dialog expands the map underneath it.
-            // Its draft, scope and insertion order survive cancelling the voice dialog.
+            // Scope already applied the route; cancelling voice only skips the notification.
             if(state.panel!=Panel.NONE) Box(Modifier.width(if(voiceOverlay) 0.dp else panelWidth).fillMaxHeight().clipToBounds()) {
                 Column(Modifier.requiredWidth(panelWidth).fillMaxHeight().clip(RoundedCornerShape(30.dp)).background(Paper).padding(18.dp).testTag("hub-panel")) {
                     Row(Modifier.fillMaxWidth().padding(bottom=16.dp),verticalAlignment=Alignment.CenterVertically) {

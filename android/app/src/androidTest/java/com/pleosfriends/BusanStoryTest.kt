@@ -154,6 +154,7 @@ class BusanStoryTest {
             tap("calendar");pause("05-full-itinerary");tap("close-panel");pause("05b-back-to-main-map");tap("waypoint-add")
             tap("realtime-gleo");waitVoice(fixture.rest.name);pause("06-rest-voice");tap("input-save")
             dragFirst();tap("scope-group");pause("07-group-route-choice")
+            snapshot().members.forEach { assertEquals(fixture.rest.name,JourneyEngine.visibleStops(snapshot(),it.id).first().name) }
             tap("notify-voice");waitVoice(fixture.messages.getValue("rest"));pause("08-rest-message");tap("input-save")
             waitTag("completion-confirm");pause("09-sent-and-updated");tap("completion-confirm")
             snapshot().members.forEach { assertEquals(fixture.rest.name,JourneyEngine.visibleStops(snapshot(),it.id).first().name) }
@@ -185,6 +186,7 @@ class BusanStoryTest {
             compose.onNodeWithTag("filter-카페").performScrollTo().performClick();pause("16-cafe-picks")
             compose.onNodeWithText(fixture.cafe.name).performScrollTo().performClick();pause("17-cafe-detail")
             scrollTap("detail-add");tap("insert-last");tap("scope-group")
+            assertTrue(JourneyEngine.visibleStops(snapshot(),"me").any { it.name == fixture.cafe.name })
             tap("notify-voice");waitVoice(fixture.messages.getValue("cafe"));pause("18-cafe-message");tap("input-save")
             waitTag("completion-confirm");tap("completion-confirm")
             tap("viewer-b");pause("19-cafe-notification")
