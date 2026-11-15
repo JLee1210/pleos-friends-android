@@ -20,10 +20,12 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: platform-tools
       - uses: gradle/actions/setup-gradle@v4
       - name: Install Android platform
-        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+        run: sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
       - name: Build and check Android app
         run: bash gradlew :app:testDemoDebugUnitTest :app:assembleDemoDebug :app:assembleConnectDebug :app:assembleDemoRelease :app:assembleDemoDebugAndroidTest :app:lintDemoDebug :app:lintConnectDebug --console=plain
       - uses: actions/upload-artifact@v4
