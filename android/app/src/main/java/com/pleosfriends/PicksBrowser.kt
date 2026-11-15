@@ -73,9 +73,9 @@ internal object PickCatalog {
             TextButton({ detail = null }) { Label("‹ 목록으로", 24, FontWeight.Bold, Purple) }
             Image(painterResource(p.image), null, Modifier.fillMaxWidth().height(240.dp).clip(RoundedCornerShape(25.dp)), contentScale = ContentScale.Crop)
             Label(p.place.name, 34, FontWeight.Bold); Label(p.summary, 24, color = Muted)
-            Label("위치  ${p.place.address}", 23); Label("영업시간  ${p.hours}", 23)
-            Label("★ ${p.rating}  ·  ${filter.source} 기준 시연 별점", 24, FontWeight.Bold, Purple)
-            Label("현대차 이용자 ${p.visits}명 방문 · ${p.likes}명 추천", 22, color = Muted)
+            Label("위치  ${p.place.address}", 23, maxLines = 1); Label("영업시간  ${p.hours}", 23, maxLines = 1)
+            Label("★ ${p.rating}  ·  ${filter.source} 기준 시연 별점", 24, FontWeight.Bold, Purple, maxLines = 1)
+            Label("🐻 ${p.visits}   👍 ${p.likes}", 24, FontWeight.Bold, Purple)
             if (add != null) Action("일정 추가", { add(p.place) }, Modifier.fillMaxWidth().testTag("detail-add"))
             Label("사진·방문·추천·별점·거리 데이터는 시연용입니다.", 17, color = Muted)
         }
@@ -101,7 +101,9 @@ internal object PickCatalog {
             Label("장소 찾기", 28, FontWeight.Bold, modifier = Modifier.padding(bottom = 13.dp))
             if (compact) {
                 Row(Modifier.fillMaxWidth().background(Color(0xFFE8E9EF), RoundedCornerShape(18.dp)).padding(5.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    listOf("실시간", "도착지").forEach { basis -> SelectChip("${basis} 기반", filter.basis == basis, Modifier.weight(1f).testTag("basis-$basis")) { update(filter.copy(basis = basis)) } }
+                    listOf("실시간" to "현재 위치", "도착지" to "도착지").forEach { (basis, label) ->
+                        SelectChip(label, filter.basis == basis, Modifier.weight(1f).testTag("basis-$basis")) { update(filter.copy(basis = basis)) }
+                    }
                 }
                 Label(if (filter.basis == "실시간") "내 차량 주변" else "${state.destination.ifBlank { JourneyEngine.region(state) }} 주변", 18, color = Muted, modifier = Modifier.padding(vertical = 12.dp))
             }
